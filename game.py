@@ -54,47 +54,79 @@ class grid:
         return sss
     def surviving(self):
         ret =[]
+        c1 =0
         for i in self.data:
+            c2=0
             for j in i:
                 if j.alive == True:
-                    ret.append([i,j])
+                    ret.append([c1,c2])
+                c2+=1
+            c1+=1
+        return ret
 
 def iter(g):
     nu = grid()
-    for h in range(g.height):
+    checked =[]
+    for i in g.surviving():
+        #print(i[0])
+        h = i[0]
+        w = i[1]
         if h == 0:
             rows = [g.height-1,h,h+1]
         elif h == g.height-1:
             rows = [h-1,h,0]
         else:
             rows = [h-1,h,h+1]
-        for w in range(g.width):
-            if w == 0:
-                collumns = [g.width-1,w,w+1]
-            elif w == g.width-1:
-                collumns = [w-1,w,0]
-            else:
-                collumns = [w-1,w,w+1]
-            count=0
-            for i in rows:
-                for j in collumns:
-                    if count >=4:
-                        pass
-                    if g.data[int(i)][int(j)].__eq__(True):
-                        count+=1
-            if g.data[h][w].alive:
-                count -=1
-            g.data[h][w].count = count
-            if count<2:
-                nu.data[h][w].kill()
-            elif count == 3:
-                nu.data[h][w].ITS_ALIVE()
-            elif count==2:
-                if g.data[h][w].alive == True:
-                   nu.data[h][w].ITS_ALIVE()
-            elif count > 3:
-                nu.data[h][w].kill()
+
+        if w == 0:
+            collumns = [g.width-1,w,w+1]
+        elif w == g.width-1:
+            collumns = [w-1,w,0]
+        else:
+            collumns = [w-1,w,w+1]
+        for i in rows:
+            for j in collumns:
+                if [i,j] in checked:
+                    continue
+                checked.append([i,j])
+                if i == 0:
+                    t_rows = [g.height-1,i,i+1]
+                elif i == g.height-1:
+                    t_rows = [i-1,i,0]
+                else:
+                    t_rows = [i-1,i,i+1]
+                if j == 0:
+                    t_collumns = [g.width-1,j,j+1]
+                elif j == g.width-1:
+                    t_collumns = [j-1,j,0]
+                else:
+                    t_collumns = [j-1,j,j+1]
+                check(nu,g,t_rows,t_collumns)
+
     g.set(nu)
+def check(nu,g,rows,collumns):
+    count=0
+    h = rows[1]
+    w = collumns[1]
+    for i in rows:
+        for j in collumns:
+            if count >=4:
+                pass
+            if g.data[int(i)][int(j)].__eq__(True):
+                count+=1
+    if g.data[h][w].alive:
+        count -=1
+    g.data[h][w].count = count
+    if count<2:
+        nu.data[h][w].kill()
+    elif count == 3:
+        nu.data[h][w].ITS_ALIVE()
+    elif count==2:
+        if g.data[h][w].alive == True:
+           nu.data[h][w].ITS_ALIVE()
+    elif count > 3:
+        nu.data[h][w].kill()
+
 def display(g):
     global c
     w = (c.winfo_width()//g.width)
